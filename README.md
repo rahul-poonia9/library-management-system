@@ -1,9 +1,14 @@
-<<<<<<< HEAD
 # 📚 Library Management System
 
 A modern, easy-to-use library management system built with React and Node.js. This system helps librarians manage books, student records, and book lending efficiently.
 
 ## 🌟 Features
+
+- **Authentication & Security**
+  - Secure admin login system
+  - JWT-based authentication
+  - Protected routes and API endpoints
+  - Session management
 
 - **Book Management**
   - Add and manage books in the library
@@ -56,6 +61,16 @@ A modern, easy-to-use library management system built with React and Node.js. Th
    DB_HOST=localhost
    DB_PORT=5432
    DB_NAME=library_db
+   JWT_SECRET=your-secret-key
+   NODE_ENV=development
+
+   # For production email settings
+   SMTP_HOST=your-smtp-host
+   SMTP_PORT=587
+   SMTP_USER=your-smtp-user
+   SMTP_PASS=your-smtp-password
+   SMTP_FROM=library@yourdomain.com
+   SMTP_SECURE=false
    ```
 
 3. **Set up the Frontend**
@@ -88,41 +103,67 @@ A modern, easy-to-use library management system built with React and Node.js. Th
 
 ## 💡 Usage
 
-1. **Managing Books**
+1. **Admin Authentication**
+   - Visit http://localhost:5173 to access the login page
+   - Default admin credentials:
+     - Email: admin@example.com
+     - Password: admin123
+   - After login, you'll be redirected to the dashboard
+
+2. **Managing Books**
    - Click on "Books" in the sidebar
    - Use the "Add Book" button to add new books
    - Edit or delete books using the action buttons
    - Search books using the search bar
 
-2. **Managing Students**
+3. **Managing Students**
    - Navigate to "Students" section
    - Add new students with their details
    - View and edit student information
    - Search students by name or roll number
 
-3. **Issuing Books**
+4. **Issuing Books**
    - Go to "Issue Books" section
    - Select a book and student
    - Set the due date
    - Confirm the issue
 
-4. **Handling Returns**
+5. **Handling Returns**
    - Find the book issue in the list
    - Click "Return Book" to process the return
    - The system will automatically update book availability
 
-5. **Monitoring Overdues**
+6. **Monitoring Overdues**
    - Check the dashboard for overdue books
    - Use the "Send Reminder" button to notify students
    - Track overdue status in real-time
 
 ## 🔧 Technical Details
 
-- **Frontend**: React, TypeScript, TailwindCSS
-- **Backend**: Node.js, Express, PostgreSQL
-- **Authentication**: JWT-based auth system
-- **Real-time Updates**: React Query
-- **UI Components**: Custom components with Shadcn UI
+- **Frontend**: 
+  - React with TypeScript
+  - TailwindCSS for styling
+  - Shadcn UI components
+  - React Query for data fetching
+  - React Router for navigation
+  - JWT for authentication
+
+- **Backend**: 
+  - Node.js with Express
+  - PostgreSQL database
+  - JWT-based authentication
+  - TypeScript for type safety
+  - Email notification system
+
+## 🛡️ Security Features
+
+- JWT-based authentication
+- Protected API endpoints
+- Secure password hashing
+- Session management
+- CORS protection
+- Environment variable configuration
+- Input validation and sanitization
 
 ## 🤝 Contributing
 
@@ -142,7 +183,4 @@ If you encounter any issues or need help, please:
 ## 🙏 Acknowledgments
 
 - Thanks to all contributors who have helped shape this project
-- Special thanks to the open-source community for the amazing tools and libraries 
-=======
-# library-management-system
->>>>>>> 1f3f665d12170126760662978645ae9d3eb3bf70
+- Special thanks to the open-source community for the amazing tools and libraries

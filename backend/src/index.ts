@@ -5,6 +5,7 @@ import { pool } from './config/database';
 import bookRoutes from './routes/books';
 import studentRoutes from './routes/students';
 import issueRoutes from './routes/issues';
+import authRoutes from './routes/auth';
 
 dotenv.config();
 
@@ -14,7 +15,7 @@ const app = express();
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:8080'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
@@ -24,6 +25,7 @@ pool.connect()
   .catch(err => console.error('Database connection error:', err));
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/issues', issueRoutes);

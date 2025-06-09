@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { ErrorBoundary } from "react-error-boundary";
@@ -6,12 +6,14 @@ import { Button } from "./components/ui/button";
 import { Toaster } from "./components/ui/toaster";
 import { Toaster as Sonner } from "./components/ui/sonner";
 import { Layout } from "./components/Layout";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 import Dashboard from "./pages/Dashboard";
 import Books from "./pages/Books";
 import Students from "./pages/Students";
 import IssueBook from "./pages/IssueBook";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
 
 const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
   return (
@@ -29,22 +31,94 @@ const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetError
   );
 };
 
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const AppRoutes = () => {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <Routes>
+      <Route 
+        path="/" 
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} 
+      />
+      
+      <Route 
+        path="/login" 
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} 
+      />
+      
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Dashboard />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/books" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Books />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/students" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Students />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/issue-book" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <IssueBook />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
 const App = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
     <QueryClientProvider client={queryClient}>
       <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/books" element={<Books />} />
-            <Route path="/students" element={<Students />} />
-            <Route path="/issue-book" element={<IssueBook />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+        <AuthProvider>
+          <AppRoutes />
+          <Toaster />
+          <Sonner />
+        </AuthProvider>
       </Router>
-      <Toaster />
-      <Sonner />
     </QueryClientProvider>
   </ErrorBoundary>
 );
