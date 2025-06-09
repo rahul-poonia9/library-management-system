@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 📚 Library Management System
 
 A modern, easy-to-use library management system built with React and Node.js. This system helps librarians manage books, student records, and book lending efficiently.
@@ -142,3 +143,6 @@ If you encounter any issues or need help, please:
 
 - Thanks to all contributors who have helped shape this project
 - Special thanks to the open-source community for the amazing tools and libraries 
+=======
+# library-management-system
+>>>>>>> 1f3f665d12170126760662978645ae9d3eb3bf70
