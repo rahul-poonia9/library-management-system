@@ -39,7 +39,7 @@ A modern, easy-to-use library management system built with React and Node.js. Th
 1. **Clone the repository**
    ```bash
    git clone [repository-url]
-   cd simple-panel-clone-main
+   cd library-management-system
    ```
 
 2. **Set up the Backend**
