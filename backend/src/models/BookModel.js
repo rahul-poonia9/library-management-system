@@ -1,8 +1,34 @@
 import { pool } from '../config/database.js';
 
 export class BookModel {
-  static async getAll() {
-    const result = await pool.query('SELECT * FROM books ORDER BY created_at DESC');
+  static async getAll(filters = {}) {
+    let query = 'SELECT * FROM books';
+    const values = [];
+    const conditions = [];
+
+    if (filters.title) {
+      values.push(`%${filters.title}%`);
+      conditions.push(`title ILIKE $${values.length}`);
+    }
+    if (filters.author) {
+      values.push(`%${filters.author}%`);
+      conditions.push(`author ILIKE $${values.length}`);
+    }
+    if (filters.category) {
+      values.push(`%${filters.category}%`);
+      conditions.push(`category ILIKE $${values.length}`);
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+    
+    query += ' ORDER BY created_at DESC';
+
+    console.log('Executing query:', query);
+    console.log('With values:', values);
+
+    const result = await pool.query(query, values);
     return result.rows;
   }
 

@@ -1,41 +1,77 @@
 import { pool } from '../config/database.js';
 
 export class BookIssueModel {
-  static async getAll() {
-    const result = await pool.query(`
-      SELECT 
-        bi.*,
-        CASE
-          WHEN bi.status = 'issued' AND bi.due_date < CURRENT_TIMESTAMP THEN 'overdue'
-          ELSE bi.status
-        END as status,
-        json_build_object(
-          'id', b.id,
-          'title', b.title,
-          'author', b.author,
-          'isbn', b.isbn,
-          'quantity', b.quantity,
-          'category', b.category,
-          'shelf_location', b.shelf_location,
-          'created_at', b.created_at,
-          'updated_at', b.updated_at
-        ) as book,
-        json_build_object(
-          'id', s.id,
-          'name', s.name,
-          'email', s.email,
-          'department', s.department,
-          'roll_number', s.roll_number,
-          'semester', s.semester,
-          'created_at', s.created_at,
-          'updated_at', s.updated_at
-        ) as student
-      FROM book_issues bi 
-      JOIN books b ON bi.book_id = b.id 
-      JOIN students s ON bi.student_id = s.id 
-      ORDER BY bi.created_at DESC
-    `);
-    return result.rows;
+  static async getAll(filters = {}) {
+    let query = `
+      WITH issues_with_status AS (
+        SELECT 
+          bi.*,
+          b.title as book_name,
+          s.name as student_name,
+          CASE
+            WHEN bi.status = 'issued' AND bi.due_date < CURRENT_TIMESTAMP THEN 'overdue'
+            ELSE bi.status
+          END as current_status,
+          json_build_object(
+            'id', b.id,
+            'title', b.title,
+            'author', b.author,
+            'isbn', b.isbn,
+            'quantity', b.quantity,
+            'category', b.category,
+            'shelf_location', b.shelf_location,
+            'created_at', b.created_at,
+            'updated_at', b.updated_at
+          ) as book,
+          json_build_object(
+            'id', s.id,
+            'name', s.name,
+            'email', s.email,
+            'department', s.department,
+            'roll_number', s.roll_number,
+            'semester', s.semester,
+            'created_at', s.created_at,
+            'updated_at', s.updated_at
+          ) as student
+        FROM book_issues bi 
+        JOIN books b ON bi.book_id = b.id 
+        JOIN students s ON bi.student_id = s.id
+      )
+      SELECT * FROM issues_with_status
+    `;
+    
+    const values = [];
+    const conditions = [];
+
+    if (filters.book_name) {
+      values.push(`%${filters.book_name}%`);
+      conditions.push(`book_name ILIKE $${values.length}`);
+    }
+    if (filters.student_name) {
+      values.push(`%${filters.student_name}%`);
+      conditions.push(`student_name ILIKE $${values.length}`);
+    }
+    if (filters.status && filters.status !== 'all') {
+      values.push(filters.status);
+      conditions.push(`current_status = $${values.length}`);
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+    
+    query += ' ORDER BY created_at DESC';
+
+    console.log('Executing query:', query);
+    console.log('With values:', values);
+
+    const result = await pool.query(query, values);
+    // Aliasing current_status back to status for frontend consistency
+    return result.rows.map(row => {
+      row.status = row.current_status;
+      delete row.current_status;
+      return row;
+    });
   }
 
   static async getById(id) {

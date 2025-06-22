@@ -2,8 +2,16 @@ import api from './api.js';
 import { API_ENDPOINTS } from '../config/api.js';
 
 class BookIssueService {
-  async getAll() {
-    const response = await api.get(API_ENDPOINTS.ISSUES);
+  async getAll(filters = {}) {
+    const queryParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        queryParams.append(key, value);
+      }
+    });
+    const queryString = queryParams.toString();
+    const url = queryString ? `${API_ENDPOINTS.ISSUES}?${queryString}` : API_ENDPOINTS.ISSUES;
+    const response = await api.get(url);
     return response.data;
   }
 

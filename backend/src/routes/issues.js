@@ -16,9 +16,6 @@ router.get('/student/:studentId', BookIssueController.getByStudent);
 // Get issues by book
 router.get('/book/:bookId', BookIssueController.getByBook);
 
-// Get issue by ID
-router.get('/:id', BookIssueController.getById);
-
 // Create new issue
 router.post('/', bookIssueValidation.create, BookIssueController.create);
 
@@ -27,5 +24,8 @@ router.put('/:id/return', bookIssueValidation.return, BookIssueController.return
 
 // Send overdue notification
 router.post('/:id/notify', bookIssueValidation.return, BookIssueController.sendOverdueNotification);
+
+// Get issue by ID - THIS MUST BE LAST
+router.get('/:id', BookIssueController.getById);
 
 export default router; 

@@ -18,12 +18,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Input } from "./ui/input";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export const BooksContent = () => {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
   const [bookToDelete, setBookToDelete] = useState(null);
+  const [filters, setFilters] = useState({
+    title: "",
+    author: "",
+    category: "",
+  });
+  const debouncedFilters = useDebounce(filters, 500);
 
   const {
     books,
@@ -35,7 +43,15 @@ export const BooksContent = () => {
     isCreating,
     isUpdating,
     isDeleting
-  } = useBooks();
+  } = useBooks(debouncedFilters);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
 
   const handleEdit = (book) => {
     setSelectedBook(book);
@@ -122,6 +138,30 @@ export const BooksContent = () => {
         </Button>
       </div>
 
+      <div className="flex items-center space-x-2 pb-4">
+        <Input
+          placeholder="Filter by title..."
+          name="title"
+          value={filters.title}
+          onChange={handleFilterChange}
+          className="max-w-sm"
+        />
+        <Input
+          placeholder="Filter by author..."
+          name="author"
+          value={filters.author}
+          onChange={handleFilterChange}
+          className="max-w-sm"
+        />
+        <Input
+          placeholder="Filter by category..."
+          name="category"
+          value={filters.category}
+          onChange={handleFilterChange}
+          className="max-w-sm"
+        />
+      </div>
+
       <DataTable
         columns={bookColumns({ onEdit: handleEdit, onDelete: handleDeleteConfirm })}
         data={books}
@@ -147,7 +187,7 @@ export const BooksContent = () => {
             <AlertDialogCancel onClick={handleDeleteCancel}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirmed}
-              className="bg-red-500 hover:bg-red-600"
+              className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 transition-colors px-4 py-2 rounded-md"
             >
               Delete
             </AlertDialogAction>

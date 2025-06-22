@@ -12,6 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { StudentDialog } from "./students/StudentDialog";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -64,6 +74,7 @@ export function StudentsContent() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState();
   const [loading, setLoading] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState(null);
 
   const { students = [], isLoading } = useStudents();
   const { mutate: deleteStudent } = useDeleteStudent();
@@ -112,6 +123,33 @@ export function StudentsContent() {
     } finally {
       setLoading(false);
       setSelectedStudent(undefined);
+    }
+  };
+
+  const handleDeleteConfirm = (student) => {
+    setStudentToDelete(student);
+  };
+
+  const handleDeleteCancel = () => {
+    setStudentToDelete(null);
+  };
+
+  const handleDeleteConfirmed = async () => {
+    if (!studentToDelete) return;
+    try {
+      await deleteStudent(studentToDelete.id);
+      toast({
+        title: "Success",
+        description: "Student deleted successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete student. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setStudentToDelete(null);
     }
   };
 
@@ -248,7 +286,9 @@ export function StudentsContent() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDeleteStudent(student.id)}
+                          onClick={() => handleDeleteConfirm(student)}
+                          className="text-red-500 hover:text-red-700"
+                          title="Delete student"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -305,6 +345,26 @@ export function StudentsContent() {
               )}
             </CardContent>
           </Card>
+
+          <AlertDialog open={!!studentToDelete} onOpenChange={(open) => !open && handleDeleteCancel()}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete the student "{studentToDelete?.name}". This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={handleDeleteCancel}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteConfirmed}
+                  className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 transition-colors px-4 py-2 rounded-md"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         <StudentDialog

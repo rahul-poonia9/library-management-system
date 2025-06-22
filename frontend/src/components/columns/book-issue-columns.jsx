@@ -29,11 +29,6 @@ export const bookIssueColumns = ({
       return (
         <span className={isOverdue ? 'text-red-600 font-semibold' : ''}>
           {format(dueDate, 'PPP')}
-          {isOverdue && (
-            <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
-              OVERDUE
-            </span>
-          )}
         </span>
       );
     },

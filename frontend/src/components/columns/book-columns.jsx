@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit2, Trash2 } from 'lucide-react';
 
 export const bookColumns = ({
   onEdit,
@@ -45,7 +45,7 @@ export const bookColumns = ({
             onClick={() => onEdit(book)}
             title="Edit book"
           >
-            <Edit className="h-4 w-4" />
+            <Edit2 className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"

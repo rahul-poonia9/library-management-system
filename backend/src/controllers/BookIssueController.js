@@ -5,7 +5,9 @@ import { sendOverdueNotification } from '../services/emailService.js';
 export class BookIssueController {
   static async getAll(req, res) {
     try {
-      const issues = await BookIssueModel.getAll();
+      const { book_name, student_name, status } = req.query;
+      const filters = { book_name, student_name, status };
+      const issues = await BookIssueModel.getAll(filters);
       res.json({ success: true, data: issues });
     } catch (error) {
       handleError(error, res);

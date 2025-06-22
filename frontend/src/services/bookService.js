@@ -2,10 +2,19 @@ import api from './api.js';
 import { API_ENDPOINTS } from '../config/api.js';
 
 class BookService {
-  async getAll() {
-    console.log('Making API call to get all books...');
+  async getAll(filters = {}) {
+    console.log('Making API call to get all books with filters:', filters);
     try {
-      const response = await api.get(API_ENDPOINTS.BOOKS);
+      const queryParams = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) {
+          queryParams.append(key, value);
+        }
+      });
+      const queryString = queryParams.toString();
+      const url = queryString ? `${API_ENDPOINTS.BOOKS}?${queryString}` : API_ENDPOINTS.BOOKS;
+      
+      const response = await api.get(url);
       console.log('API response:', response.data);
       
       // Handle both wrapped and unwrapped responses

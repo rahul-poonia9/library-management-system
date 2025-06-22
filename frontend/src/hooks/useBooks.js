@@ -2,15 +2,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookService } from '../services/bookService.js';
 import { toast } from 'sonner';
 
-export const useBooks = () => {
+export const useBooks = (filters) => {
   const queryClient = useQueryClient();
 
   const { data: books = [], isLoading, error } = useQuery({
-    queryKey: ['books'],
+    queryKey: ['books', filters],
     queryFn: async () => {
-      console.log('Fetching books...');
+      console.log('Fetching books with filters:', filters);
       try {
-        const response = await bookService.getAll();
+        const response = await bookService.getAll(filters);
         console.log('Books response:', response);
         return Array.isArray(response) ? response : [];
       } catch (error) {

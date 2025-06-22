@@ -42,7 +42,7 @@ export const IssueBookDialog = ({
 
   const isLoadingData = isBooksLoading || isStudentsLoading;
 
-  // Filter out books with quantity 0
+  // Filter out books with quantity 0>0
   const availableBooks = books?.filter(book => book.quantity > 0) || [];
 
   return (

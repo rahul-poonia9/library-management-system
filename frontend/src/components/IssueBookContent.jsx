@@ -8,11 +8,20 @@ import { LoadingSpinner } from './ui/loading-spinner';
 import { ErrorAlert } from './ui/error-alert';
 import { useToast } from './ui/use-toast';
 import { bookIssueService } from '../services/bookIssueService';
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { useDebounce } from '../hooks/useDebounce';
 
 export const IssueBookContent = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSendingNotification, setIsSendingNotification] = useState(false);
   const { toast } = useToast();
+  const [filters, setFilters] = useState({
+    book_name: '',
+    student_name: '',
+    status: '',
+  });
+  const debouncedFilters = useDebounce(filters, 500);
   
   const {
     bookIssues,
@@ -22,10 +31,14 @@ export const IssueBookContent = () => {
     returnBook,
     isCreating,
     isReturning
-  } = useBookIssues();
+  } = useBookIssues(debouncedFilters);
 
   // Calculate overdue books count
   const overdueCount = bookIssues?.filter(issue => issue.status === 'overdue').length || 0;
+
+  const handleFilterChange = (name, value) => {
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleIssue = async (data) => {
     try {
@@ -141,6 +154,32 @@ export const IssueBookContent = () => {
         >
           Issue Book
         </Button>
+      </div>
+
+      <div className="flex items-center space-x-2 pb-4">
+        <Input
+          placeholder="Filter by book name..."
+          value={filters.book_name}
+          onChange={(e) => handleFilterChange('book_name', e.target.value)}
+          className="max-w-sm"
+        />
+        <Input
+          placeholder="Filter by student name..."
+          value={filters.student_name}
+          onChange={(e) => handleFilterChange('student_name', e.target.value)}
+          className="max-w-sm"
+        />
+        <Select onValueChange={(value) => handleFilterChange('status', value)} value={filters.status}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="issued">Issued</SelectItem>
+            <SelectItem value="overdue">Overdue</SelectItem>
+            <SelectItem value="returned">Returned</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <DataTable

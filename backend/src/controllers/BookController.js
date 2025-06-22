@@ -4,7 +4,10 @@ import { handleError, ApiError } from '../utils/errorHandler.js';
 export class BookController {
   static async getAll(req, res) {
     try {
-      const books = await BookModel.getAll();
+      const { title, author, category } = req.query;
+      const filters = { title, author, category };
+      
+      const books = await BookModel.getAll(filters);
       res.json({ success: true, data: books });
     } catch (error) {
       handleError(error, res);
