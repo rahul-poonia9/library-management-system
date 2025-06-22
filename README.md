@@ -9,6 +9,12 @@ A modern, easy-to-use library management system built with React and Node.js. Th
   - JWT-based authentication
   - Protected routes and API endpoints
   - Session management
+ 
+- **Dashboard**
+  - Real-time overview of library statistics
+  - Track total books, students, and active loans
+  - Monitor overdue books
+  - View recent activities
 
 - **Book Management**
   - Add and manage books in the library
@@ -27,11 +33,7 @@ A modern, easy-to-use library management system built with React and Node.js. Th
   - Automatic overdue detection
   - Send reminder notifications for overdue books
 
-- **Dashboard**
-  - Real-time overview of library statistics
-  - Track total books, students, and active loans
-  - Monitor overdue books
-  - View recent activities
+
 
 ## 🚀 Getting Started
 
